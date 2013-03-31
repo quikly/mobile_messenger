@@ -1,0 +1,3 @@
+Message Id: 1j0j9u0002bres006s43i3iu9mi0
+StatusURL: https://status.mobilemessenger.com/status/gws/7fdhts45y434908ksl78m21d8641/SMS/2007052218/0u4v16j01g20890fgq466094jjcv-00q5djd01g20890fgq466094jj80.xml
+ReceiptURL: https://status.mobilemessenger.com/status/gws/7fdhts45y434908ksl78m21d8641/SMS/2007052218/0u4v16j01g20890fgq466094jjcv-00q5djd01g20890fgq466094jj80-receipts.xml

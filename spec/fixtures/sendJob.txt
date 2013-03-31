@@ -1,0 +1,10 @@
+job-request-id=abc234354659234
+mqube-id=08urnjq00g003v0bk246419epvlk
+accepted-date=05/22/2007 6:15:35 PM UTC
+status-code=0
+status-details=Job Accepted
+max-retries=0
+retry-delay-secs=0
+num-destinations-accepted=3
+status-url=https://status.mobilemessenger.com/status/gws/7fdhts45y434908ksl78m21d8641/SMS/2007052218/08urnjq00g003v0bk246419epvlk-abc234354659234.xml
+receipt-url=https://status.mobilemessenger.com/status/gws/7fdhts45y434908ksl78m21d8641/SMS/2007052218/08urnjq00g003v0bk246419epvlk-abc234354659234-receipts.xml
