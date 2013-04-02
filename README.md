@@ -7,7 +7,7 @@ Non-official MobileMessenger ruby gem.
 
 Add this line to your application's Gemfile to install via rubygems.org
 
-    gem 'mobile+messenger'
+    gem 'mobile_messenger'
 
 And then execute:
 
