@@ -1,4 +1,4 @@
-<?xml version="1.0"?>
+<?xml version="1.0" encoding="UTF-8"?>
 <job-report>
   <job-request-id>abc234354659234</job-request-id>
   <mqube-id>08urnjq00g003v0bk246419epvlk</mqube-id>
@@ -7,7 +7,7 @@
   <status>COMPLETE</status>
   <recipients>
     <recipient><destination>6175551000</destination><msgid>0fjkjrt00g003v0b7k4351h4u2eg</msgid>
-&#xFFFC;<status>SENT</status> </recipient>
+    <status>SENT</status> </recipient>
     <recipient>
       <destination>6175551001</destination>
       <msgid>1fsluoh00g003v0b7k4351h4u2dg</msgid>

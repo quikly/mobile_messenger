@@ -1,0 +1,7 @@
+maxRecipientsPerXmlJob=1000
+serviceCodeSizeMax=18
+messageSizeMax=496
+urlSizeMax=1024
+proxyHostSizeMax=255
+proxyPortSizeMax=5
+jobRequestIdSizeMax=64

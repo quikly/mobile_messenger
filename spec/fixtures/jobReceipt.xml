@@ -1,0 +1,27 @@
+<?xml version="1.0"?>
+<job-receipt-report>
+  <job-request-id>abc234354659234</job-request-id>
+  <mqube-id>08urnjq00g003v0bk246419epvlk</mqube-id>
+  <receipts>
+    <receipt>
+      <id>1pr4h5100g003v0bi244410d3p50</id>
+      <msgid>11o0afq00g003v0bi244410d3nvg</msgid>
+      <send-fail>id:314shi032gmheo2dcqq076dr8dnk sub:001 dlvrd:001 submit date:1208260232 done date:1208260232 stat:UNDELIV err:00a text:This is some MT text idd:null</send-fail>
+    </receipt>
+    <receipt>
+      <id>29bl722061ghkv2f8sb5b4c9a3u4</id>
+      <msgid>3h7q60s0f8eh9n2hh9mi45adg6l1</msgid>
+      <send-notify>id:3h7q60s0f8eh9n2hh9mi45adg6l1 sub:001 dlvrd:001 submit date:1208260238 done date:1208260238 stat:ENROUTE err:000 text:12345678901234567890 idd:REWA72MA_ES^15502555794039</send-notify>
+    </receipt>
+    <receipt>
+      <id>3mkv78i2o88grf2ses1kt7553pla</id>
+      <msgid>3h7q60s0f8eh9n2hh9mi45adg6l1</msgid>
+      <delivered>id:15502555794039 sub:001 dlvrd:001 submit date:1208251939 done date:1208251939 stat:DELIVRD err:000 Text:12345678901234567890</delivered>
+    </receipt>
+    <receipt>
+      <id>3ajhm5u2angi6f2sf0tpl7sa0boi</id>
+      <msgid>1hg2ldp2lvuhoj263gitu7109p6c</msgid>
+      <expired>id:0705393711 sub:001 dlvrd:000 submit date:1208191903 done date:1208221903 stat:EXPIRED err:017 text:abcdefghijklmnopqrst</expired>
+    </receipt>
+  </receipts>
+</job-receipt-report>

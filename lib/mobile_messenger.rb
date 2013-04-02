@@ -7,6 +7,6 @@ require 'mobile_messenger/util/parser'
 module MobileMessenger
   # Your code goes here...
   def self.version_string
-    "MobileMessenger SMS Gateway Ruby Gem v#{MobileMessenger::VERSION}"
+    "v#{MobileMessenger::VERSION}"
   end
 end

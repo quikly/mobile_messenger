@@ -29,6 +29,30 @@ describe MobileMessenger::Util::Parser do
     )
   end
   
+  it 'parses an xml response' do
+    response = fixture('jobStatus.xml')
+    result = MobileMessenger::Util::Parser.parse_xml_response(response.read)
+  end
+  
+  it 'creates simple xml from a hash' do
+    MobileMessenger::Util::Parser.to_xml({
+      'this-is' => 'my-value'
+    }).should == '<this-is>my-value</this-is>'
+  end
+  
+  it 'creates simple xml from a nexted hash' do
+    MobileMessenger::Util::Parser.to_xml({
+      'message' => {
+        'sms' => 'Two guys go into a bar...',
+      },
+      'action' => 'CONTENT',
+      'recipients' => [
+        { 'r' => {'destination' => 'tel:6175551000'}},
+        { 'r' => {'destination' => 'tel:6175551001'}},
+      ]
+    }).should == '<message><sms>Two guys go into a bar...</sms></message><action>CONTENT</action><recipients><r><destination>tel:6175551000</destination></r><r><destination>tel:6175551001</destination></r></recipients>'
+  end
+  
   
   
 end
