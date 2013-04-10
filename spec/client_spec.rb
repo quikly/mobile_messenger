@@ -40,6 +40,15 @@ describe MobileMessenger::Client do
           "Message Id" => "1j0j9u0002bres006s43i3iu9mi0"
         )
       end
+      
+      it "handles an error response", focus: true do
+        #If the sendSingle() call fails, the HTTP response header contains the relevant error code. For example:
+        #HTTP Status 400 - 11104- Missing value for destination
+        stub_post(sms_host, "/wsgw/sendSingle").to_return(status: 400)
+        lambda {
+          @client.send(:send_single, send_single_params)
+        }.should raise_error(MobileMessenger::RequestError)
+      end
     end
     
     describe "when sending multiple messages" do

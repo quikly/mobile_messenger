@@ -15,6 +15,7 @@ module MobileMessenger
       :proxy_port => nil,
       :proxy_user => nil,
       :proxy_pass => nil,
+      :default_product_code => nil,
       :retry_limit => 1,
     }
         
@@ -31,10 +32,12 @@ module MobileMessenger
       }
       
       params = defaults.merge(options).merge({
-        'service-code' => from,
+        'serviceCode' => from,
         'destination'  => to,
         'message'      => message
       })
+      
+      params['productCode'] = @config[:default_product_code] if params['productCode'].nil?
       
       send_single params
     end
@@ -85,7 +88,9 @@ module MobileMessenger
     
     def send_single(params)
       host = @config[:sms_host]
-      parse_send_single_response(post(host, '/wsgw/sendSingle', params))
+      response = post(host, '/wsgw/sendSingle', params)
+      
+      parse_send_single_response(response)
     end
     
     def send_multiple_params(from, recipients, message, options = {})
