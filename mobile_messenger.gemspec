@@ -6,8 +6,8 @@ Gem::Specification.new do |spec|
   spec.version       = MobileMessenger::VERSION
   spec.authors       = ["Scott Meves"]
   spec.email         = ["scott@quikly.com"]
-  spec.description   = %q{TODO: Write a gem description}
-  spec.summary       = %q{TODO: Write a gem summary}
+  spec.description   = "Provides a ruby interface for the Mobile Messenger API"
+  spec.summary       = "Provides a ruby interface for the Mobile Messenger API"
   spec.homepage      = ""
   spec.license       = "MIT"
 
