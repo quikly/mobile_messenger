@@ -9,7 +9,7 @@ module MobileMessenger
       :port => 443,
       :use_ssl => true,
       :ssl_verify_peer => true,
-      :ssl_version => 'SSLv3'
+      :ssl_version => 'SSLv3',
       :ssl_ca_file => File.dirname(__FILE__) + '/../../../conf/cacert.pem',
       :timeout => 30,
       :proxy_addr => nil,
