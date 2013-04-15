@@ -9,6 +9,7 @@ module MobileMessenger
       :port => 443,
       :use_ssl => true,
       :ssl_verify_peer => true,
+      :ssl_version => 'SSLv3'
       :ssl_ca_file => File.dirname(__FILE__) + '/../../../conf/cacert.pem',
       :timeout => 30,
       :proxy_addr => nil,
@@ -157,6 +158,11 @@ module MobileMessenger
     
     def set_up_ssl(connection)
       connection.use_ssl = @config[:use_ssl]
+      
+      if connection.use_ssl && @config[:ssl_version]
+        http.ssl_version = @config[:ssl_version]
+      end
+        
       if @config[:ssl_verify_peer]
         connection.verify_mode = OpenSSL::SSL::VERIFY_PEER
         connection.ca_file = @config[:ssl_ca_file]
