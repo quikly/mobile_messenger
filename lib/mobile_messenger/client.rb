@@ -159,8 +159,8 @@ module MobileMessenger
     def set_up_ssl(connection)
       connection.use_ssl = @config[:use_ssl]
       
-      if connection.use_ssl && @config[:ssl_version]
-        http.ssl_version = @config[:ssl_version]
+      if connection.use_ssl? && @config[:ssl_version]
+        connection.ssl_version = @config[:ssl_version]
       end
         
       if @config[:ssl_verify_peer]
