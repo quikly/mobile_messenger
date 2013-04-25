@@ -51,21 +51,7 @@ describe MobileMessenger::Client do
       end
     end
     
-    describe "when sending multiple messages" do
-      it "converts send_job params to xml" do
-        @client.send(:send_job_params_to_xml, send_job_params).should include(
-          "JobXML" => fixture("sendJobRequest.xml").read
-        )
-      end
-    
-      it "sends a job with raw parameters" do
-        stub_post(sms_host, "/wsgw/sendJob").to_return(body: fixture("sendJob.txt"))
-        @client.send_job(send_job_params).should include(
-          'job-request-id' => 'abc234354659234',
-          'status-details' => 'Job Accepted',
-        )
-      end
-    
+    describe "when sending multiple messages", focus: true do
       it "sets up params for send_job" do
         stub_post(sms_host, "/wsgw/sendJob").to_return(body: fixture("sendJob.txt"))
         params = @client.send(:send_multiple_params, '12345', ['6175551000', '6175551001'], 'This is the message...')
@@ -75,7 +61,32 @@ describe MobileMessenger::Client do
           'service-code'    => '12345',
           'recipient-count' => 2
         )
-      end      
+        params.should have_key('recipients')
+      end
+      
+      it "#send_job_params_to_xml(params)" do
+        params = @client.send(:send_multiple_params, '12345', ['6175551000', '6175551001'], 'This is the message...')
+        xml = @client.send(:send_job_params_to_xml, params)        
+        doc = MobileMessenger::Util::Parser.parse_xml_response(xml)
+        REXML::XPath.match(doc, '/job-request/job-request-id').should_not be_empty
+        REXML::XPath.match(doc, '/job-request/message/sms').first.text.should == 'This is the message...'
+        REXML::XPath.match(doc, '/job-request/recipients/r').length.should == 2
+        REXML::XPath.match(doc, '/job-request/recipients/r/destination').first.text.should == 'tel:6175551000'
+      end
+      
+      it "converts send_job params to xml" do
+        xml = @client.send(:send_job_params_to_xml, send_job_params)        
+        xml.should == fixture("sendJobRequest.xml").read
+      end
+    
+      it "sends a job with raw parameters" do
+        stub_post(sms_host, "/wsgw/sendJob").to_return(body: fixture("sendJob.txt"))
+        @client.send_job(send_job_params).should include(
+          'job-request-id' => 'abc234354659234',
+          'status-details' => 'Job Accepted',
+        )
+      end
+
     end
     
     it "gets the job config" do

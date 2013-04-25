@@ -50,7 +50,9 @@ module MobileMessenger
     
     def send_job(params)
       host = @config[:sms_host]
-      parse_send_job_response(post(host, '/wsgw/sendJob', send_job_params_to_xml(params)))
+      parse_send_job_response(post(host, '/wsgw/sendJob', {
+        'JobXML' => send_job_params_to_xml(params)
+      }))
     end
     
     def check_job_status(job_id)
@@ -100,12 +102,11 @@ module MobileMessenger
         'receipt-options' => 'DELIVERED',
       }
       
-      recipients.uniq.map! { |x| { 'destination' => "tel:#{x}"} }
-      
       params = defaults.merge(options).merge({
         'service-code' => from,
         'recipient-count' => recipients.size,
         'message' => {'sms' => message},
+        'recipients' => recipients.uniq.map { |x| {'r' => {'destination' => "tel:#{x}"}} }
       })
       
       if params['job-request-id'].nil?
@@ -202,9 +203,7 @@ module MobileMessenger
     end
     
     def send_job_params_to_xml(params)
-      {
-        'JobXML' => '<job-request>' + MobileMessenger::Util::Parser.to_xml(params) + '</job-request>'
-      }
+      '<job-request>' + MobileMessenger::Util::Parser.to_xml(params) + '</job-request>'
     end
   
     def generate_job_id
