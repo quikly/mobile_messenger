@@ -112,7 +112,8 @@ describe MobileMessenger::Client do
   
     it "checks a mobile number" do
       stub_post(ws_host, "/wsgw/checkMobileNumber").to_return(body: fixture("checkMobileNumber.xml"))
-      @client.check_mobile_number('5008885555').elements['carrierId'].text.should == '2'
+      result = @client.check_mobile_number('5008885555')
+      result['carrierId'].should == '2'
     end
     
   end

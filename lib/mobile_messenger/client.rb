@@ -81,16 +81,18 @@ module MobileMessenger
     def check_mobile_number(number, version = nil, lookup_device = nil)
       host = @config[:ws_host]
       params = {
-        mobileNumber: number.to_s
+        'mobileNumber' => number.to_s
       }
-      params[:version] = version unless version.nil?
-      params[:lookupDevice] = (lookup_device ? 'true' : 'false') unless lookup_device.nil?
+      params['version'] = version unless version.nil?
+      params['lookupDevice'] = (lookup_device ? 'true' : 'false') unless lookup_device.nil?
       
-      MobileMessenger::Util::Parser.parse_xml_response(post(host, '/wsgw/checkMobileNumber', params))
+      response = post(host, '/wsgw/checkMobileNumber', params)
+      
+      parse_check_mobile_number_response(response)
     end
         
     private
-    
+        
     def send_single(params)
       host = @config[:sms_host]
       response = post(host, '/wsgw/sendSingle', params)
@@ -202,6 +204,14 @@ module MobileMessenger
     
     def parse_send_single_response(response)
       MobileMessenger::Util::Parser.parse_response(response, ": ")
+    end
+    
+    def parse_check_mobile_number_response(response)
+      xml = MobileMessenger::Util::Parser.parse_xml_response(response)
+      {
+        "carrierId" => xml.elements["carrierId"].text,
+        "error" => xml.elements["error"].text
+      }
     end
     
     def send_job_params_to_xml(params)
