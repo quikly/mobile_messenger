@@ -78,15 +78,17 @@ module MobileMessenger
       MobileMessenger::Util::Parser.parse_response(get(host, '/wsgw/getJobConfig'), "=")
     end
     
-    def check_mobile_number(number, version = 2)
+    def check_mobile_number(number, version = nil, lookup_device = nil)
       host = @config[:ws_host]
       params = {
-        number: number.to_i,
-        version: version
+        mobileNumber: number.to_s
       }
+      params[:version] = version unless version.nil?
+      params[:lookupDevice] = (lookup_device ? 'true' : 'false') unless lookup_device.nil?
+      
       MobileMessenger::Util::Parser.parse_xml_response(post(host, '/wsgw/checkMobileNumber', params))
     end
-    
+        
     private
     
     def send_single(params)
