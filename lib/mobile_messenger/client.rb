@@ -210,7 +210,7 @@ module MobileMessenger
     def parse_check_mobile_number_response(response)
       xml = MobileMessenger::Util::Parser.parse_xml_response(response)
       {
-        "carrierId" => xml.elements["carrierId"].text,
+        "carrierId" => xml.elements["carrierId"].text.to_i,
         "error" => xml.elements["error"].text
       }
     end
