@@ -91,7 +91,7 @@ module MobileMessenger
       
       parse_check_mobile_number_response(response)
     end
-        
+
     private
         
     def send_single(params)
@@ -194,9 +194,17 @@ module MobileMessenger
         object = response.body
       end
       if response.kind_of? Net::HTTPClientError
-        raise MobileMessenger::RequestError
+        raise MobileMessenger::RequestError.new(error_message_from_response(response))
       end
       object
+    end
+    
+    def error_message_from_response(response)
+      if /(\d{0,5})\-\s(.+)/.match(response.message)
+        $2
+      else
+        response.message
+      end
     end
     
     def parse_send_job_response(response)

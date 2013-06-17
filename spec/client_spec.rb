@@ -49,6 +49,15 @@ describe MobileMessenger::Client do
           @client.send(:send_single, send_single_params)
         }.should raise_error(MobileMessenger::RequestError)
       end
+      
+      it "gets a message from an error response" do
+        @client.send(:error_message_from_response, stub(message: '12345- This is the error message.')).should == "This is the error message."
+      end
+      
+      it "returns a generic message from an error response" do
+        @client.send(:error_message_from_response, stub(message: 'whatever')).should == "whatever"
+      end
+        
     end
     
     describe "when sending multiple messages", focus: true do
