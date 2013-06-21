@@ -150,6 +150,7 @@ module MobileMessenger
       uri = URI(path)
       http = connection uri.host, uri.port
       request = Net::HTTP::Get.new(uri)
+      request.basic_auth @username, @password
       response = connect_and_send request, http
       MobileMessenger::Util::Parser.parse_xml_response(response)
     end
