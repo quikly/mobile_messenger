@@ -1,6 +1,13 @@
 require 'spec_helper'
 
 describe MobileMessenger::Client do
+  
+  it "raises an ArgumentException if username or password is not set" do
+    expect {
+      @client = MobileMessenger::Client.new
+    }.to raise_error(ArgumentError)
+  end
+  
   describe "with default configuration" do
     before(:all) do
       @client = MobileMessenger::Client.new('username', 'password')
@@ -26,7 +33,7 @@ describe MobileMessenger::Client do
       connection.use_ssl?.should == true
     end
     
-    describe "when sending an sms", focus: true do
+    describe "when sending an sms" do
       it "sends an sms with send_sms" do
         stub_post(sms_host, "/wsgw/sendSingle").to_return(body: fixture("sendSingle.txt"))
         @client.send_sms("12345", "5008885555", "Test message goes here").should include(
@@ -41,7 +48,7 @@ describe MobileMessenger::Client do
         )
       end
       
-      it "handles an error response", focus: true do
+      it "handles an error response" do
         #If the sendSingle() call fails, the HTTP response header contains the relevant error code. For example:
         #HTTP Status 400 - 11104- Missing value for destination
         stub_post(sms_host, "/wsgw/sendSingle").to_return(status: 400)
@@ -60,7 +67,7 @@ describe MobileMessenger::Client do
         
     end
     
-    describe "when sending multiple messages", focus: true do
+    describe "when sending multiple messages" do
       it "sets up params for send_job" do
         stub_post(sms_host, "/wsgw/sendJob").to_return(body: fixture("sendJob.txt"))
         params = @client.send(:send_multiple_params, '12345', ['6175551000', '6175551001', '6175551001'], 'This is the message...')

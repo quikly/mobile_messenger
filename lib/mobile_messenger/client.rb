@@ -24,6 +24,9 @@ module MobileMessenger
     attr_reader :username, :last_request, :last_response
     
     def initialize(username, password, options = {})
+      raise(ArgumentError, "username must be a string") unless username.is_a? String
+      raise(ArgumentError, "password must be a string") unless password.is_a? String
+      
       @username, @password = username.strip, password.strip
       @config = DEFAULTS.merge(options)
     end
@@ -147,6 +150,7 @@ module MobileMessenger
       uri = URI(path)
       http = connection uri.host, uri.port
       request = Net::HTTP::Get.new(uri)
+      request.basic_auth @username, @password
       response = connect_and_send request, http
       MobileMessenger::Util::Parser.parse_xml_response(response)
     end
