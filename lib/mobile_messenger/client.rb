@@ -109,7 +109,7 @@ module MobileMessenger
       
       params = defaults.merge(options).merge({
         'service-code' => from,
-        'recipient-count' => recipients.size,
+        'recipient-count' => recipients.uniq.size,
         'message' => {'sms' => message},
         'recipients' => recipients.uniq.map { |x| {'r' => {'destination' => "tel:#{x}"}} }
       })
@@ -134,7 +134,7 @@ module MobileMessenger
     def get(host, uri, *args)
       params = args[0]; params = {} if params.nil? || params.empty?
       unless args[1]
-        uri << "?#{url_encode(params)}" if !params.empty?
+        uri << "?#{MobileMessenger::Util::url_encode(params)}" if !params.empty?
       end
       request = Net::HTTP::Get.new uri
       request.basic_auth @username, @password

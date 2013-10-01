@@ -63,7 +63,7 @@ describe MobileMessenger::Client do
     describe "when sending multiple messages", focus: true do
       it "sets up params for send_job" do
         stub_post(sms_host, "/wsgw/sendJob").to_return(body: fixture("sendJob.txt"))
-        params = @client.send(:send_multiple_params, '12345', ['6175551000', '6175551001'], 'This is the message...')
+        params = @client.send(:send_multiple_params, '12345', ['6175551000', '6175551001', '6175551001'], 'This is the message...')
         params.should include(
           'action'          => 'CONTENT',
           'receipt-options' => 'DELIVERED',
