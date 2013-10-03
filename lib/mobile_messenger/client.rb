@@ -191,8 +191,8 @@ module MobileMessenger
           raise MobileMessenger::ServerError
         end
       rescue Exception
-        raise if request.class == Net::HTTP::Post
-        if retries_left > 0 then retries_left -1; retry else raise end
+        raise if request.class == Net::HTTP::Post || request.class == WebMock::NetConnectNotAllowedError
+        if retries_left > 0 then retries_left -= 1; retry else raise end
       end
       if response.body and !response.body.empty?
         object = response.body

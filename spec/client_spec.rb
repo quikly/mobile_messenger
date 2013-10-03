@@ -7,18 +7,18 @@ describe MobileMessenger::Client do
       @client = MobileMessenger::Client.new
     }.to raise_error(ArgumentError)
   end
-  
+ 
   describe "with default configuration" do
     before(:all) do
       @client = MobileMessenger::Client.new('username', 'password')
     end
     subject { @client }
-    
+
     it 'sets up a new client instance with the given username and password' do
       @client.username.should == 'username'
       @client.instance_variable_get('@password').should == 'password'
     end
-    
+
     it 'sets up the proper default http ssl connection' do
       connection = @client.send(:connection)
       connection.address.should == 'sendsms.mobilemessenger.com'
@@ -79,7 +79,7 @@ describe MobileMessenger::Client do
         )
         params.should have_key('recipients')
       end
-      
+
       it "#send_job_params_to_xml(params)" do
         params = @client.send(:send_multiple_params, '12345', ['6175551000', '6175551001'], 'This is the message...')
         xml = @client.send(:send_job_params_to_xml, params)        
@@ -102,7 +102,7 @@ describe MobileMessenger::Client do
           'status-details' => 'Job Accepted',
         )
       end
-
+  
     end
     
     it "gets the job config" do
@@ -113,17 +113,19 @@ describe MobileMessenger::Client do
         'messageSizeMax' => '496',
       )
     end
-
+  
     it "gets a job status report" do
-      url = 'https://status.mobilemessenger.com/status/gws/7fdhts45y434908ksl78m21d8641/SMS/2007052218/08urnjq00g003v0bk246419epvlk-abc234354659234.xml'
-      stub_request(:get, url).to_return(body: fixture("jobStatus.xml"))
-      @client.get_job_status_report(url).elements["job-request-id"].text.should == 'abc234354659234'
+      host = "status.mobilemessenger.com"
+      path = "/status/gws/7fdhts45y434908ksl78m21d8641/SMS/2007052218/08urnjq00g003v0bk246419epvlk-abc234354659234.xml"
+      stub_get(host, path).to_return(body: fixture("jobStatus.xml"))
+      @client.get_job_status_report("https://#{host}#{path}").elements["job-request-id"].text.should == 'abc234354659234'
     end
-
+  
     it "gets a job receipt report" do
-      url = 'https://status.mobilemessenger.com/status/gws/7fdhts45y434908ksl78m21d8641/SMS/2007052218/08urnjq00g003v0bk246419epvlk-abc234354659234-receipts.xml'
-      stub_request(:get, url).to_return(body: fixture("jobReceipt.xml"))
-      @client.get_job_status_report(url).elements["mqube-id"].text.should == '08urnjq00g003v0bk246419epvlk'
+      host = "status.mobilemessenger.com"
+      path = "/status/gws/7fdhts45y434908ksl78m21d8641/SMS/2007052218/08urnjq00g003v0bk246419epvlk-abc234354659234-receipts.xml"
+      stub_get(host, path).to_return(body: fixture("jobReceipt.xml"))
+      @client.get_job_status_report("https://#{host}#{path}").elements["mqube-id"].text.should == '08urnjq00g003v0bk246419epvlk'
     end
   
     it "checks a mobile number" do
@@ -140,7 +142,7 @@ describe MobileMessenger::Client do
       connection = client.send(:connection)
       connection.ca_file.should == '/path/to/ca/file'
     end
-
+  
     it 'adjusts the open and read timeouts on the underlying Net::HTTP object when asked' do
       timeout = rand(30)
       client = MobileMessenger::Client.new('username', 'password', timeout: timeout)
@@ -150,7 +152,7 @@ describe MobileMessenger::Client do
       connection.open_timeout.should == timeout
       connection.read_timeout.should == timeout
     end
-
+  
     it 'sets up the proper http ssl connection when a proxy_host is given' do
       client = MobileMessenger::Client.new('username', 'password', sms_host: 'sendsms.fakemobilemessenger.com', proxy_addr: 'localhost')
       connection = client.send(:connection)
@@ -161,7 +163,7 @@ describe MobileMessenger::Client do
       connection.port.should == 443
       connection.use_ssl?.should == true
     end
-
+  
     it 'sets up the proper http ssl connection when a proxy_host and proxy_port are given' do
       client = MobileMessenger::Client.new('username', 'password', sms_host: 'sendsms.fakemobilemessenger.com', proxy_addr: 'localhost', proxy_port: 13128)
       connection = client.send(:connection)
