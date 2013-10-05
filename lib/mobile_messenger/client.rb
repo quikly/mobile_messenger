@@ -4,6 +4,8 @@ require 'openssl'
 module MobileMessenger
   class Client
     
+    include ::MobileMessenger::Util::Carriers
+    
     DEFAULTS = {
       :sms_host => 'sendsms.mobilemessenger.com',
       :ws_host => 'ws.mobilemessenger.com',
@@ -93,6 +95,20 @@ module MobileMessenger
       response = post(host, '/wsgw/checkMobileNumber', params)
       
       parse_check_mobile_number_response(response)
+    end
+    
+    def carrier_lookup(number, version = nil, lookup_device = nil)
+      result = check_mobile_number(number)
+      if result["error"]
+        if /20700-/ =~ result["error"]
+          carrier_id = -1
+        else
+          carrier_id = nil
+        end
+      else
+        carrier_id = result["carrierId"].to_i
+      end
+      carrier_id
     end
 
     private
@@ -187,7 +203,7 @@ module MobileMessenger
       begin
         response = connection.request request
         @last_response = response
-        if response.kind_of? Net::HTTPServerError
+        if response.kind_of? Net::HTTPServerError # error 5xx
           raise MobileMessenger::ServerError
         end
       rescue Exception
@@ -197,7 +213,7 @@ module MobileMessenger
       if response.body and !response.body.empty?
         object = response.body
       end
-      if response.kind_of? Net::HTTPClientError
+      if response.kind_of? Net::HTTPClientError # error 4xx, like HTTP Status 400
         raise MobileMessenger::RequestError.new(error_message_from_response(response))
       end
       object
