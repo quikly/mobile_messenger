@@ -40,14 +40,16 @@ describe MobileMessenger::Client do
           "Message Id" => "1j0j9u0002bres006s43i3iu9mi0"
         )
       end
-    
-      it "sends a single message" do
+          
+      it "sends a single message parses ids from the status URL" do
         stub_post(sms_host, "/wsgw/sendSingle").to_return(body: fixture("sendSingle.txt"))
         @client.send(:send_single, send_single_params).should include(
-          "Message Id" => "1j0j9u0002bres006s43i3iu9mi0"
+          "Message Id"     => "1j0j9u0002bres006s43i3iu9mi0",
+          "mqube-id"       => "0u4v16j01g20890fgq466094jjcv",
+          "job-request-id" => "00q5djd01g20890fgq466094jj80"
         )
       end
-      
+
       it "handles an error response" do
         #If the sendSingle() call fails, the HTTP response header contains the relevant error code. For example:
         #HTTP Status 400 - 11104- Missing value for destination

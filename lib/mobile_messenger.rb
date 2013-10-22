@@ -4,6 +4,7 @@ require 'mobile_messenger/util/parser'
 require 'mobile_messenger/util/carriers'
 require 'mobile_messenger/client'
 require 'mobile_messenger/errors'
+require 'mobile_messenger/job_notification'
 
 module MobileMessenger
   # Your code goes here...

@@ -35,7 +35,8 @@ module MobileMessenger
     
     def send_sms(from, to, message, options = {})
       defaults = {
-        'action' => 'CONTENT'
+        'action' => 'CONTENT',
+        'receiptOption' => 'DELIVERED',
       }
       
       params = defaults.merge(options).merge({
@@ -220,7 +221,9 @@ module MobileMessenger
     end
     
     def error_message_from_response(response)
-      if /(\d{0,5})\-\s(.+)/.match(response.message)
+      if response.instance_of? Net::HTTPNotFound
+        "404 Not Found #{response.message}"
+      elsif /(\d{0,5})\-\s(.+)/.match(response.message)
         $2
       else
         response.message
@@ -231,8 +234,14 @@ module MobileMessenger
       MobileMessenger::Util::Parser.parse_response(response, "=")
     end
     
+    # patch the sendSingle response with a job-status-id and an mqube-id
+    # this saves us a an extra trip to query the status URL
     def parse_send_single_response(response)
-      MobileMessenger::Util::Parser.parse_response(response, ": ")
+      r = MobileMessenger::Util::Parser.parse_response(response, ": ")
+      if r.has_key?("StatusURL") && (ids = status_url_to_ids(r["StatusURL"]))
+        r.merge!(ids)
+      end
+      r
     end
     
     def parse_check_mobile_number_response(response)
@@ -246,7 +255,11 @@ module MobileMessenger
     def send_job_params_to_xml(params)
       '<job-request>' + MobileMessenger::Util::Parser.to_xml(params) + '</job-request>'
     end
-  
+    
+    def status_url_to_ids(status_url)
+      MobileMessenger::Util::Parser.job_and_mqube_id_from_status_url(status_url)
+    end
+    
     def generate_job_id
       SecureRandom.uuid
     end

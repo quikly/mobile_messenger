@@ -53,6 +53,16 @@ describe MobileMessenger::Util::Parser do
     }).should == '<message><sms>Two guys go into a bar...</sms></message><action>CONTENT</action><recipients><r><destination>tel:6175551000</destination></r><r><destination>tel:6175551001</destination></r></recipients>'
   end
   
+  context "parsing status url" do 
+    it 'parses a job-status-id and mqube-id from a status url' do
+      url = 'https://status.mobilemessenger.com/status/gws/7fdhts45y434908ksl78m21d8641/SMS/2007052218/0u4v16j01g20890fgq466094jjcv00q5djd01g-20890f-gq466094jj80.xml'
+      expect( MobileMessenger::Util::Parser.job_and_mqube_id_from_status_url(url)).to eq({'job-request-id' => '20890f-gq466094jj80', 'mqube-id' => '0u4v16j01g20890fgq466094jjcv00q5djd01g'})
+    end
   
+    it 'does not break when format is unexpected' do
+      url = 'https://status.mobilemessenger.com/status/gws/7fdhts45y434908ksl78m21d8641/SMS/2007052218/whatever.xml'
+      expect( MobileMessenger::Util::Parser.job_and_mqube_id_from_status_url(url)).to eq(nil)
+    end
+  end  
   
 end
