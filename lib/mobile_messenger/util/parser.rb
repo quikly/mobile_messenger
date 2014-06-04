@@ -30,7 +30,7 @@ module MobileMessenger
             elsif Array === v
               text = v.map {|x| MobileMessenger::Util::Parser.to_xml(x)}.join
             else
-              text = v.encode(xml: :text)
+              text = v.respond_to?(:encode) ? v.encode(xml: :text) : v
             end
             "<%s>%s</%s>" % [k, text, k]
           end.join

@@ -40,6 +40,12 @@ describe MobileMessenger::Util::Parser do
     }).should == '<this-is>my-value</this-is>'
   end
 
+  it 'does not complain if the attribute is nil' do
+    MobileMessenger::Util::Parser.to_xml({
+      'nil-value' => nil
+    }).should == '<nil-value></nil-value>'
+  end
+
   it 'creates simple xml from a nested hash' do
     MobileMessenger::Util::Parser.to_xml({
       'message' => {
