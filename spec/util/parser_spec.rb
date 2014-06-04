@@ -14,33 +14,33 @@ describe MobileMessenger::Util::Parser do
       "max-retries"               => "0",
       "retry-delay-secs"          => "0",
       "num-destinations-accepted" => "3",
-      "status-url"                => "https://status.mobilemessenger.com/status/gws/7fdhts45y434908ksl78m21d8641/SMS/2007052218/08urnjq00g003v0bk246419epvlk-abc234354659234.xml", 
-      "receipt-url"               => "https://status.mobilemessenger.com/status/gws/7fdhts45y434908ksl78m21d8641/SMS/2007052218/08urnjq00g003v0bk246419epvlk-abc234354659234-receipts.xml"      
+      "status-url"                => "https://status.mobilemessenger.com/status/gws/7fdhts45y434908ksl78m21d8641/SMS/2007052218/08urnjq00g003v0bk246419epvlk-abc234354659234.xml",
+      "receipt-url"               => "https://status.mobilemessenger.com/status/gws/7fdhts45y434908ksl78m21d8641/SMS/2007052218/08urnjq00g003v0bk246419epvlk-abc234354659234-receipts.xml"
     )
   end
-  
+
   it 'parses a simple response with colon separators' do
     response = fixture('sendSingle.txt')
     result = MobileMessenger::Util::Parser.parse_response(response.read, ': ')
     result.should include(
       "Message Id" => "1j0j9u0002bres006s43i3iu9mi0",
-      "StatusURL"  => "https://status.mobilemessenger.com/status/gws/7fdhts45y434908ksl78m21d8641/SMS/2007052218/0u4v16j01g20890fgq466094jjcv-00q5djd01g20890fgq466094jj80.xml", 
-      "ReceiptURL" => "https://status.mobilemessenger.com/status/gws/7fdhts45y434908ksl78m21d8641/SMS/2007052218/0u4v16j01g20890fgq466094jjcv-00q5djd01g20890fgq466094jj80-receipts.xml"      
+      "StatusURL"  => "https://status.mobilemessenger.com/status/gws/7fdhts45y434908ksl78m21d8641/SMS/2007052218/0u4v16j01g20890fgq466094jjcv-00q5djd01g20890fgq466094jj80.xml",
+      "ReceiptURL" => "https://status.mobilemessenger.com/status/gws/7fdhts45y434908ksl78m21d8641/SMS/2007052218/0u4v16j01g20890fgq466094jjcv-00q5djd01g20890fgq466094jj80-receipts.xml"
     )
   end
-  
+
   it 'parses an xml response' do
     response = fixture('jobStatus.xml')
     result = MobileMessenger::Util::Parser.parse_xml_response(response.read)
   end
-  
+
   it 'creates simple xml from a hash' do
     MobileMessenger::Util::Parser.to_xml({
       'this-is' => 'my-value'
     }).should == '<this-is>my-value</this-is>'
   end
-  
-  it 'creates simple xml from a nexted hash' do
+
+  it 'creates simple xml from a nested hash' do
     MobileMessenger::Util::Parser.to_xml({
       'message' => {
         'sms' => 'Two guys go into a bar...',
@@ -52,17 +52,23 @@ describe MobileMessenger::Util::Parser do
       ]
     }).should == '<message><sms>Two guys go into a bar...</sms></message><action>CONTENT</action><recipients><r><destination>tel:6175551000</destination></r><r><destination>tel:6175551001</destination></r></recipients>'
   end
-  
-  context "parsing status url" do 
+
+  it 'escapes xml text' do
+    MobileMessenger::Util::Parser.to_xml({
+      'math-is-fun' => 'we know that 2 > 1 && 1 > 0'
+    }).should == '<math-is-fun>we know that 2 &gt; 1 &amp;&amp; 1 &gt; 0</math-is-fun>'
+  end
+
+  context "parsing status url" do
     it 'parses a job-status-id and mqube-id from a status url' do
       url = 'https://status.mobilemessenger.com/status/gws/7fdhts45y434908ksl78m21d8641/SMS/2007052218/0u4v16j01g20890fgq466094jjcv00q5djd01g-20890f-gq466094jj80.xml'
       expect( MobileMessenger::Util::Parser.job_and_mqube_id_from_status_url(url)).to eq({'job-request-id' => '20890f-gq466094jj80', 'mqube-id' => '0u4v16j01g20890fgq466094jjcv00q5djd01g'})
     end
-  
+
     it 'does not break when format is unexpected' do
       url = 'https://status.mobilemessenger.com/status/gws/7fdhts45y434908ksl78m21d8641/SMS/2007052218/whatever.xml'
       expect( MobileMessenger::Util::Parser.job_and_mqube_id_from_status_url(url)).to eq(nil)
     end
-  end  
-  
+  end
+
 end

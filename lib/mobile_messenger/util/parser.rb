@@ -7,7 +7,7 @@ module MobileMessenger
 
       class << self
         # There are a few different types of responses
-        # sendJob responds with 
+        # sendJob responds with
         def parse_response(response, separator = '=')
           Hash[response.split(/\r?\n/).map {|it| it.split(separator, 2)}]
         end
@@ -22,7 +22,7 @@ module MobileMessenger
           end
           root
         end
-      
+
         def to_xml(params)
           params.map do |k, v|
             if Hash === v
@@ -30,17 +30,17 @@ module MobileMessenger
             elsif Array === v
               text = v.map {|x| MobileMessenger::Util::Parser.to_xml(x)}.join
             else
-              text = v
+              text = v.encode(xml: :text)
             end
             "<%s>%s</%s>" % [k, text, k]
           end.join
         end
-        
+
         def job_and_mqube_id_from_status_url(status_url)
           if m = status_url.match(/\/(?<mqube-id>[a-z0-9]+)-(?<job-request-id>[a-z0-9-]+)\.xml/)
             Hash[m.names.zip(m.captures)]
           end
-        end        
+        end
       end
     end
   end
