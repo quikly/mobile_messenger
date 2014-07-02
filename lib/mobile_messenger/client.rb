@@ -1,11 +1,13 @@
 require 'net/http'
 require 'openssl'
 require 'mobile_messenger/client/bulk'
+require 'mobile_messenger/client/single'
 
 module MobileMessenger
   class Client
 
     include ::MobileMessenger::Util::Carriers
+    include ::MobileMessenger::Client::Single
     include ::MobileMessenger::Client::Bulk
 
     DEFAULTS = {
@@ -33,58 +35,6 @@ module MobileMessenger
 
       @username, @password = username.strip, password.strip
       @config = DEFAULTS.merge(options)
-    end
-
-    def send_sms(from, to, message, options = {})
-      defaults = {
-        'action' => 'CONTENT',
-        'receiptOption' => 'DELIVERED',
-      }
-
-      params = defaults.merge(options).merge({
-        'serviceCode' => from,
-        'destination'  => to,
-        'message'      => message
-      })
-
-      params['productCode'] = @config[:default_product_code] if params['productCode'].nil?
-
-      send_single params
-    end
-
-    def send_multiple(from, recipients, message, options = {})
-      params = send_multiple_params(from, recipients, message, options)
-      send_job params
-    end
-
-    def send_job(params)
-      host = @config[:sms_host]
-      parse_send_job_response(post(host, '/wsgw/sendJob', {
-        'JobXML' => send_job_params_to_xml(params)
-      }))
-    end
-
-    def check_job_status(job_id)
-      host = @config[:ws_host]
-      response = get(host, '/wsgw/checkJobStatus', { 'JobRequestId' => job_id })
-      if response.body == 'INVALID'
-        false
-      else
-        parse_send_job_response(response)
-      end
-    end
-
-    def get_job_status_report(path)
-      get_external_xml(path)
-    end
-
-    def get_job_receipt_report(path)
-      get_external_xml(path)
-    end
-
-    def get_job_config
-      host = @config[:ws_host]
-      MobileMessenger::Util::Parser.parse_response(get(host, '/wsgw/getJobConfig'), "=")
     end
 
     def check_mobile_number(number, version = nil, lookup_device = nil)
@@ -115,33 +65,6 @@ module MobileMessenger
     end
 
     private
-
-    def send_single(params)
-      host = @config[:sms_host]
-      response = post(host, '/wsgw/sendSingle', params)
-
-      parse_send_single_response(response)
-    end
-
-    def send_multiple_params(from, recipients, message, options = {})
-      defaults = {
-        'action'          => 'CONTENT',
-        'receipt-options' => 'DELIVERED',
-      }
-
-      params = defaults.merge(options).merge({
-        'service-code' => from,
-        'recipient-count' => recipients.uniq.size,
-        'message' => {'sms' => message},
-        'recipients' => recipients.uniq.map { |x| {'r' => {'destination' => "tel:#{x}"}} }
-      })
-
-      if params['job-request-id'].nil?
-        params['job-request-id'] = generate_job_id
-      end
-
-      params
-    end
 
     def post(host, uri, *args)
       params = args[0]; params = {} if params.nil? || params.empty?
@@ -230,20 +153,6 @@ module MobileMessenger
       else
         response.message
       end
-    end
-
-    def parse_send_job_response(response)
-      MobileMessenger::Util::Parser.parse_response(response, "=")
-    end
-
-    # patch the sendSingle response with a job-status-id and an mqube-id
-    # this saves us a an extra trip to query the status URL
-    def parse_send_single_response(response)
-      r = MobileMessenger::Util::Parser.parse_response(response, ": ")
-      if r.has_key?("StatusURL") && (ids = status_url_to_ids(r["StatusURL"]))
-        r.merge!(ids)
-      end
-      r
     end
 
     def parse_check_mobile_number_response(response)

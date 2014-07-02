@@ -100,7 +100,7 @@ describe MobileMessenger::Client do
 
       it "sends a job with raw parameters" do
         stub_post(sms_host, "/wsgw/sendJob").to_return(body: fixture("sendJob.txt"))
-        expect(@client.send_job(send_job_params)).to include(
+        expect(@client.send(:send_job, send_job_params)).to include(
           'job-request-id' => 'abc234354659234',
           'status-details' => 'Job Accepted',
         )
