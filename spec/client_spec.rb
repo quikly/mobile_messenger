@@ -23,14 +23,14 @@ describe MobileMessenger::Client do
       connection = @client.send(:connection)
       expect(connection.address).to eq('sendsms.mobilemessenger.com')
       expect(connection.port).to eq(443)
-      expect(connection.use_ssl?).to be_true
+      expect(connection.use_ssl?).to be(true)
     end
 
     it 'sets up the proper http ssl connection when a different domain is given' do
       connection = @client.send(:connection, "sendsms.fakemobilemessenger.com")
       expect(connection.address).to eq('sendsms.fakemobilemessenger.com')
       expect(connection.port).to eq(443)
-      expect(connection.use_ssl?).to be_true
+      expect(connection.use_ssl?).to be(true)
     end
 
     describe "when sending an sms" do
@@ -151,7 +151,7 @@ describe MobileMessenger::Client do
       client = MobileMessenger::Client.new('username', 'password', timeout: timeout)
       connection = client.send(:connection)
       expect(connection.port).to eq 443
-      expect(connection.use_ssl?).to be_true
+      expect(connection.use_ssl?).to be(true)
       expect(connection.open_timeout).to eq timeout
       expect(connection.read_timeout).to eq timeout
     end
@@ -159,23 +159,23 @@ describe MobileMessenger::Client do
     it 'sets up the proper http ssl connection when a proxy_host is given' do
       client = MobileMessenger::Client.new('username', 'password', sms_host: 'sendsms.fakemobilemessenger.com', proxy_addr: 'localhost')
       connection = client.send(:connection)
-      expect(connection.proxy?).to be_true
+      expect(connection.proxy?).to be(true)
       expect(connection.proxy_address).to eq 'localhost'
       expect(connection.proxy_port).to eq 80
       expect(connection.address).to eq 'sendsms.fakemobilemessenger.com'
       expect(connection.port).to eq 443
-      expect(connection.use_ssl?).to be_true
+      expect(connection.use_ssl?).to be(true)
     end
 
     it 'sets up the proper http ssl connection when a proxy_host and proxy_port are given' do
       client = MobileMessenger::Client.new('username', 'password', sms_host: 'sendsms.fakemobilemessenger.com', proxy_addr: 'localhost', proxy_port: 13128)
       connection = client.send(:connection)
-      expect(connection.proxy?).to be_true
+      expect(connection.proxy?).to be(true)
       expect(connection.proxy_address).to eq 'localhost'
       expect(connection.proxy_port).to eq 13128
       expect(connection.address).to eq 'sendsms.fakemobilemessenger.com'
       expect(connection.port).to eq 443
-      expect(connection.use_ssl?).to be_true
+      expect(connection.use_ssl?).to be(true)
     end
   end
 end

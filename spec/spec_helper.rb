@@ -42,14 +42,14 @@ def send_job_params
           'destination' => 'tel:6175551002',
           'message' => {
             'sms' => 'A giraffe goes into a bar...',
-          }, 
+          },
           'product-code' => 'ACMEX_12345_JOKE_199_S',
         }
       }
     ]
   }
 end
-  
+
 def sms_host
   "sendsms.mobilemessenger.com"
 end
@@ -57,11 +57,11 @@ end
 def ws_host
   "ws.mobilemessenger.com"
 end
-  
+
 def stub_post(host, path)
-  stub_request(:post, "https://username:password@#{host}#{path}")
+  stub_request(:post, "https://#{host}#{path}").with(basic_auth: ['username', 'password'])
 end
 
 def stub_get(host, path)
-  stub_request(:get, "https://username:password@#{host}#{path}")
+  stub_request(:get, "https://#{host}#{path}").with(basic_auth: ['username', 'password'])
 end

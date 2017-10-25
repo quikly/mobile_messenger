@@ -1,7 +1,8 @@
-require 'net/http'
-require 'openssl'
 require 'mobile_messenger/client/bulk'
 require 'mobile_messenger/client/single'
+require 'net/http'
+require 'openssl'
+require 'securerandom'
 
 module MobileMessenger
   class Client
