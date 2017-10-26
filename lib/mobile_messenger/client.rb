@@ -130,30 +130,38 @@ module MobileMessenger
       begin
         response = connection.request request
         @last_response = response
-        if response.kind_of? Net::HTTPServerError # error 5xx
-          raise MobileMessenger::ServerError
+        if response.kind_of? Net::HTTPServerError
+          # 5xx server error responses all have a superclass of Net::HTTPServerError
+          raise MobileMessenger::ServerError.new(response.message, response.code)
         end
-      rescue Exception
+      rescue StandardError
+        # Retry the request unless we are doing a POST
+        # and then ultimately re-raise the exception
         raise if request.class == Net::HTTP::Post
         if retries_left > 0 then retries_left -= 1; retry else raise end
       end
       if response.body and !response.body.empty?
         object = response.body
       end
-      if response.kind_of? Net::HTTPClientError # error 4xx, like HTTP Status 400
-        raise MobileMessenger::RequestError.new(error_message_from_response(response))
+      if response.kind_of? Net::HTTPClientError
+        # 4xx client error responses all have a superclass of of Net::HTTPClientError
+        raise request_error_from_response(response)
       end
       object
     end
 
-    def error_message_from_response(response)
+    def request_error_from_response(response)
       if response.instance_of? Net::HTTPNotFound
-        "404 Not Found #{response.message}"
+        code = "404"
+        message = "404 Not Found #{response.message}"
       elsif /(\d{0,5})\-\s(.+)/.match(response.message)
-        $2
+        code = $1
+        message = $2
       else
-        response.message
+        code = response.code
+        message = response.message
       end
+      MobileMessenger::RequestError.new(message, code)
     end
 
     def parse_check_mobile_number_response(response)

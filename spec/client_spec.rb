@@ -50,24 +50,82 @@ describe MobileMessenger::Client do
         )
       end
 
-      it "handles an error response" do
+      describe "4xx Client Errors" do
+        it "raises a MobileMessenger::RequestError when receiving a 400 status" do
+          #If the sendSingle() call fails, the HTTP response header contains the relevant error code. For example:
+          #HTTP Status 400 - 11104- Missing value for destination
+          stub_post(sms_host, "/wsgw/sendSingle").to_return(status: [400, "03573- Destination phone number not found."])
+          expect {
+            @client.send(:send_single, send_single_params)
+          }.to raise_error(MobileMessenger::RequestError, "Destination phone number not found.") { |error|
+            expect(error.code).to eq("03573")
+          }
+        end
+
+        it "raises a MobileMessenger::RequestError when receiving a 404 status" do
+          #If the sendSingle() call fails, the HTTP response header contains the relevant error code. For example:
+          #HTTP Status 400 - 11104- Missing value for destination
+          stub_post(sms_host, "/wsgw/sendSingle").to_return(status: [404, "Additional Text"])
+          expect {
+            @client.send(:send_single, send_single_params)
+          }.to raise_error(MobileMessenger::RequestError, "404 Not Found Additional Text") { |error|
+            expect(error.code).to eq("404")
+          }
+        end
+      end
+
+      describe "5xx Server Errors" do
+        it "raises a MobileMessenger::ServerError when receiving a 503 status" do
+          #If the sendSingle() call fails, the HTTP response header contains the relevant error code. For example:
+          #HTTP Status 400 - 11104- Missing value for destination
+          stub_post(sms_host, "/wsgw/sendSingle").to_return(status: [503, "Service Temporarily Unavailable"])
+          expect {
+            @client.send(:send_single, send_single_params)
+          }.to raise_error(MobileMessenger::ServerError, "Service Temporarily Unavailable") { |error|
+            expect(error.code).to eq("503")
+          }
+        end
+      end
+
+      it "raises a Net::OpenTimeout on timeout" do
         #If the sendSingle() call fails, the HTTP response header contains the relevant error code. For example:
         #HTTP Status 400 - 11104- Missing value for destination
-        stub_post(sms_host, "/wsgw/sendSingle").to_return(status: 400)
+        stub_post(sms_host, "/wsgw/sendSingle").to_timeout
         expect {
           @client.send(:send_single, send_single_params)
-        }.to raise_error(MobileMessenger::RequestError)
+        }.to raise_error(Net::OpenTimeout)
       end
 
-      it "gets a message from an error response" do
-        expect(@client.send(:error_message_from_response, double(message: '12345- This is the error message.'))).to eq "This is the error message."
-
+      it "re-raises a Net::HTTPFatalError" do
+        stub_post(sms_host, "/wsgw/sendSingle").to_raise(Net::HTTPFatalError.new('503 "Service Temporarily Unavailable"',
+          Net::HTTPServiceUnavailable.new(nil, "503", "Service Temporarily Unavailable")
+        ))
+        expect {
+          @client.send(:send_single, send_single_params)
+        }.to raise_error(Net::HTTPFatalError, '503 "Service Temporarily Unavailable"') { |error|
+          expect(error.response.code).to eq("503")
+        }
       end
 
-      it "returns a generic message from an error response" do
-        expect(@client.send(:error_message_from_response, double(message: 'whatever'))).to eq "whatever"
-      end
+      describe "#request_error_from_response" do
+        context "with an error response" do
+          let(:response) { double(code: "400", message: "12345- This is the error message.") }
+          it "gets a message and code from an error response" do
+            error = @client.send(:request_error_from_response, response)
+            expect(error.message).to eq("This is the error message.")
+            expect(error.code).to eq("12345")
+          end
+        end
 
+        context "with a generic response" do
+          let(:response) { double(code: "503", message: "This is an error with no code.") }
+          it "returns a generic message with the http status code" do
+            error = @client.send(:request_error_from_response, response)
+            expect(error.message).to eq("This is an error with no code.")
+            expect(error.code).to eq("503")
+          end
+        end
+      end
     end
 
     describe "when sending multiple messages" do
