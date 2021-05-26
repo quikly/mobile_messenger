@@ -31,7 +31,7 @@ describe MobileMessenger::Client::Bulk do
         expect(REXML::XPath.match(doc, '/job-request/recipients/r/destination').first.text).to eq('tel:6175551000')
         expect(REXML::XPath.match(doc, '/job-request/recipients/r/message[1]/sms').first.text).to eq('message 1')
         expect(REXML::XPath.match(doc, '/job-request/recipients/r/destination')[1].text).to eq('tel:6175551001')
-        expect(REXML::XPath.match(doc, '/job-request/recipients/r/message[2]/sms').first.text).to eq('message 2')
+        expect(REXML::XPath.match(doc, '/job-request/recipients/r[2]/message/sms').first.text).to eq('message 2')
       end
     end
 

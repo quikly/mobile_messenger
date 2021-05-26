@@ -128,7 +128,9 @@ module MobileMessenger
       @last_request = request
       retries_left = @config[:retry_limit]
       begin
-        response = connection.request request
+        response = connection.start do |opened_http|
+          opened_http.request request
+        end
         @last_response = response
         if response.kind_of? Net::HTTPServerError
           # 5xx server error responses all have a superclass of Net::HTTPServerError
